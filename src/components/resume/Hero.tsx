@@ -1,19 +1,81 @@
-import { Mail, Phone, MapPin, Linkedin, Download } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Download, Monitor, Server, Wifi, HardDrive, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { resumeData } from "@/data/resumeData";
 
 const Hero = () => {
+  const handleDownloadResume = () => {
+    // Create resume content
+    const resumeContent = `
+${resumeData.name}
+${resumeData.title}
+
+CONTACT
+Email: ${resumeData.contact.email}
+Phone: ${resumeData.contact.phone}
+Location: ${resumeData.contact.location}
+LinkedIn: ${resumeData.contact.linkedin}
+
+PROFESSIONAL SUMMARY
+${resumeData.summary}
+
+TECHNICAL SKILLS
+${resumeData.technicalSkills.map(skill => `${skill.category}: ${skill.skills.join(", ")}`).join("\n")}
+
+CORE ABILITIES
+${resumeData.coreAbilities.join(" | ")}
+
+EXPERIENCE
+${resumeData.experience.map(exp => `
+${exp.title} - ${exp.company}
+${exp.period} | ${exp.location}
+${exp.description}
+${exp.highlights.length > 0 ? exp.highlights.map(h => `• ${h}`).join("\n") : ""}
+`).join("\n")}
+
+EDUCATION
+${resumeData.education.map(edu => `${edu.degree} in ${edu.major}${edu.subMajor ? ` (${edu.subMajor})` : ""} - ${edu.institution}, ${edu.year}`).join("\n")}
+    `.trim();
+
+    const blob = new Blob([resumeContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${resumeData.name.replace(/\s+/g, "_")}_Resume.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary/80">
-      {/* Animated background elements */}
+      {/* IT-themed animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
+        
+        {/* Floating IT icons */}
+        <div className="absolute top-20 left-[10%] text-primary-foreground/10 animate-bounce" style={{ animationDelay: "0s", animationDuration: "3s" }}>
+          <Monitor className="w-12 h-12" />
+        </div>
+        <div className="absolute top-40 right-[15%] text-primary-foreground/10 animate-bounce" style={{ animationDelay: "0.5s", animationDuration: "3.5s" }}>
+          <Server className="w-10 h-10" />
+        </div>
+        <div className="absolute bottom-32 left-[20%] text-primary-foreground/10 animate-bounce" style={{ animationDelay: "1s", animationDuration: "4s" }}>
+          <Wifi className="w-14 h-14" />
+        </div>
+        <div className="absolute bottom-40 right-[25%] text-primary-foreground/10 animate-bounce" style={{ animationDelay: "1.5s", animationDuration: "3.2s" }}>
+          <HardDrive className="w-8 h-8" />
+        </div>
+        <div className="absolute top-1/3 left-[5%] text-primary-foreground/10 animate-bounce" style={{ animationDelay: "2s", animationDuration: "4.5s" }}>
+          <Cpu className="w-10 h-10" />
+        </div>
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+      {/* Circuit board pattern overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.05)_1px,transparent_1px),radial-gradient(circle_at_75%_75%,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
       <div className="relative z-10 container mx-auto px-6 py-20">
         <div className="max-w-4xl mx-auto text-center">
@@ -72,6 +134,7 @@ const Hero = () => {
           {/* CTA Button */}
           <Button
             size="lg"
+            onClick={handleDownloadResume}
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-primary-foreground/20 transition-all hover:scale-105"
           >
             <Download className="w-5 h-5 mr-2" />

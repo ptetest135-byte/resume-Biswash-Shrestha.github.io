@@ -32,6 +32,31 @@ export const resumeData = {
     "Critical Thinking",
     "Eager to Learning",
   ],
+  professionalSkills: {
+    communication: [
+      "Highly Numerate",
+      "Empowered decision making",
+      "Strong oral and written skills",
+      "Fosters Open Communication",
+    ],
+    personalEffectiveness: [
+      "Acts with integrity",
+      "Demonstrates adaptability",
+      "Detail orientation",
+      "Personal organization",
+      "Works well under pressure",
+      "Sensitive to cultural differences",
+      "Solves problems and offers solutions",
+      "Innovative and flexible thinking",
+    ],
+    interpersonal: [
+      "Excellent customer service skills",
+      "Ability to prioritize tasks and manage time effectively",
+      "Ability to work collaboratively with team members",
+      "Flexibility to adapt to changing technologies",
+      "Meticulous attention to detail",
+    ],
+  },
   experience: [
     {
       title: "IT Support Specialist",
@@ -39,8 +64,19 @@ export const resumeData = {
       period: "Feb 2025 - Present",
       location: "Sydney, NSW 2000",
       description:
-        "Recruited to provide technical support to end-users, ensuring a smooth operation of IT infrastructure, and resolving hardware and software issues.",
-      highlights: [],
+        "Providing first and second-level technical support to users, ensuring a smooth operation of IT infrastructure, and resolving hardware and software issues.",
+      highlights: [
+        "Provide timely and efficient technical support to users across multiple locations, platforms, and technologies.",
+        "Track IT incidents and service requests, prioritize issues, and escalate as needed.",
+        "Administration and maintenance of IT tools and services including on-premises and cloud resources, Active Directory, Microsoft 365, SharePoint Online, software applications, hardware and AV equipment.",
+        "Provide basic Layer 2 network support for LAN and wireless networks.",
+        "Identify and implement IT solutions to improve efficiency and productivity.",
+        "Maintain and update IT documentation, enhancing the knowledge base for end-user and technical support.",
+        "Collaborate with global IT teams to ensure consistent service delivery and knowledge sharing.",
+        "Assist in the deployment and configuration of new IT and Security software and hardware.",
+        "Work with the Information Security Manager to ensure adherence to security policies and procedures.",
+        "Assist in the investigation and resolution of security incidents, such as malware attacks and phishing attempts.",
+      ],
     },
     {
       title: "IT Support Analyst (Contract)",
