@@ -70,8 +70,7 @@ export const resumeData = {
       company: "epay Australia Pty Ltd",
       period: "Feb 2025 - Present",
       location: "Sydney, NSW 2000",
-      description:
-        "Providing first and second-level technical support to users, ensuring a smooth operation of IT infrastructure, and resolving hardware and software issues.",
+      description: "Providing first and second-level technical support to users, ensuring a smooth operation of IT infrastructure, and resolving hardware and software issues.",
       highlights: [
         "Provide timely and efficient technical support to users across multiple locations, platforms, and technologies.",
         "Track IT incidents and service requests, prioritize issues, and escalate as needed.",
