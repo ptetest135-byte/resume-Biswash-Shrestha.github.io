@@ -136,7 +136,7 @@ const Hero = () => {
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...primaryColor);
       doc.text(exp.title, margin, y);
-      
+
       // Company and period on same line
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
@@ -214,7 +214,7 @@ const Hero = () => {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
-        
+
         {/* Floating IT icons */}
         <div className="absolute top-20 left-[10%] text-primary-foreground/10 animate-bounce" style={{ animationDelay: "0s", animationDuration: "3s" }}>
           <Monitor className="w-12 h-12" />
@@ -240,7 +240,7 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-6 py-20">
         <div className="max-w-4xl mx-auto text-center">
           {/* Name with gradient */}
-          <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground mb-4 tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-['Helvetica'] font-bold text-primary-foreground mb-4 tracking-tight">
             {resumeData.name}
           </h1>
 

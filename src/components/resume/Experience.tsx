@@ -52,8 +52,8 @@ const Experience = () => {
                   >
                     <div
                       className={`bg-card rounded-2xl p-6 border transition-all duration-300 group cursor-pointer ${isHighlighted
-                          ? "border-primary/30 hover:border-primary hover:shadow-xl shadow-lg"
-                          : "border-border/50 hover:border-border opacity-75 hover:opacity-100"
+                        ? "border-primary/30 hover:border-primary hover:shadow-xl shadow-lg"
+                        : "border-border/50 hover:border-border opacity-75 hover:opacity-100"
                         }`}
                       onMouseEnter={() => setExpandedIndex(index)}
                       onMouseLeave={() => setExpandedIndex(null)}
@@ -74,11 +74,12 @@ const Experience = () => {
                           <h3 className="font-bold text-lg">{job.title}</h3>
                         </div>
                         <div className="text-foreground font-semibold">{job.company}</div>
-                        <div className={`flex flex-wrap md:flex-nowrap gap-4 text-sm text-muted-foreground ${index % 2 === 0 ? "md:justify-end" : ""}`}>
+                        <div className={`flex flex-nowrap items-center gap-2 text-sm text-muted-foreground whitespace-nowrap overflow-x-auto ${index % 2 === 0 ? "md:justify-end" : ""}`}>
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {job.period}
                           </span>
+                          <span>•</span>
                           <span className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             {job.location}

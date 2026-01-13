@@ -35,8 +35,8 @@ const CursorFollower = () => {
     let animationFrameId: number;
 
     const animate = () => {
-      // Lerp factor (0.1 = slow/syrupy, 0.2 = responsive)
-      const lerp = 0.15;
+      // Lerp factor - lower = heavier/bouncier physics
+      const lerp = 0.1;
 
       const targetX = cursorRef.current.x;
       const targetY = cursorRef.current.y;
@@ -51,7 +51,8 @@ const CursorFollower = () => {
       }
 
       if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${trailerRef.current.x}px, ${trailerRef.current.y}px) scale(${isClicking ? 0.8 : 1})`;
+        // Antigravity style: just a heavy, trailing circle
+        ringRef.current.style.transform = `translate(${trailerRef.current.x}px, ${trailerRef.current.y}px) scale(${isClicking ? 0.9 : 1})`;
       }
 
       animationFrameId = requestAnimationFrame(animate);
@@ -73,15 +74,15 @@ const CursorFollower = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden mix-blend-difference">
-      {/* The main dot - follows instantly */}
+      {/* The main dot - follows instantly. White (becomes black on white background due to mix-blend-difference) */}
       <div
         ref={dotRef}
-        className="absolute left-0 top-0 h-3 w-3 rounded-full bg-white transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 will-change-transform"
+        className="absolute left-0 top-0 h-2 w-2 rounded-full bg-white transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 will-change-transform"
       />
-      {/* The trailing ring - follows with physics */}
+      {/* The trailing ring - heavier physics. Simple outlined circle. */}
       <div
         ref={ringRef}
-        className="absolute left-0 top-0 h-10 w-10 rounded-full border border-white/50 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 will-change-transform"
+        className="absolute left-0 top-0 h-12 w-12 rounded-full border-2 border-white/80 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 will-change-transform"
       />
     </div>
   );
