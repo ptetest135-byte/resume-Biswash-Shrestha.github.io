@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Save, ArrowLeft, Plus, X, Github, Settings, Loader2 } from "lucide-react";
+import { Save, ArrowLeft, Plus, X, Github, Settings, Loader2, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { resumeData as initialData } from "@/data/resumeData";
 import { useToast } from "@/hooks/use-toast";
@@ -16,10 +16,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
-// Define Types locally since they might not be exported from data file
+// Define Types
 interface ResumeData {
   name: string;
   title: string;
@@ -41,12 +40,19 @@ interface ResumeData {
 
 const Admin = () => {
   const { toast } = useToast();
+
+  // -- Auth State --
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [authError, setAuthError] = useState(false);
+
+  // -- Data State --
   const [data, setData] = useState<ResumeData>(initialData);
   const [newAbility, setNewAbility] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // GitHub Settings State
+  // -- GitHub Settings State --
   const [githubToken, setGithubToken] = useState("");
   const [repoOwner, setRepoOwner] = useState("ptetest135-byte");
   const [repoName, setRepoName] = useState("ptetest135-byte.github.io");
@@ -61,7 +67,23 @@ const Admin = () => {
     if (savedToken) setGithubToken(savedToken);
     if (savedOwner) setRepoOwner(savedOwner);
     if (savedRepo) setRepoName(savedRepo);
+
+    // Simple session persistence for refresh convenience
+    const sessionAuth = sessionStorage.getItem("admin_auth");
+    if (sessionAuth === "true") setIsAuthenticated(true);
   }, []);
+
+  const handleLogin = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    // Default password check
+    if (passwordInput === "admin123") {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("admin_auth", "true");
+      setAuthError(false);
+    } else {
+      setAuthError(true);
+    }
+  };
 
   const saveSettings = () => {
     localStorage.setItem("github_token", githubToken);
@@ -71,6 +93,7 @@ const Admin = () => {
     toast({ title: "Settings Saved", description: "Your GitHub configuration has been saved locally." });
   };
 
+  // --- Handlers ---
   const handleBasicInfoChange = (field: string, value: string) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".");
@@ -93,6 +116,26 @@ const Admin = () => {
         i === index ? { ...exp, [field]: value } : exp
       ),
     }));
+  };
+
+  // Highlights / Responsibilities
+  const handleAddHighlight = (jobIndex: number) => {
+    const newHighlights = [...data.experience[jobIndex].highlights, "New responsibility..."];
+    const newExperience = [...data.experience];
+    newExperience[jobIndex].highlights = newHighlights;
+    setData({ ...data, experience: newExperience });
+  };
+
+  const handleHighlightChange = (jobIndex: number, highlightIndex: number, value: string) => {
+    const newExperience = [...data.experience];
+    newExperience[jobIndex].highlights[highlightIndex] = value;
+    setData({ ...data, experience: newExperience });
+  };
+
+  const handleDeleteHighlight = (jobIndex: number, highlightIndex: number) => {
+    const newExperience = [...data.experience];
+    newExperience[jobIndex].highlights = newExperience[jobIndex].highlights.filter((_: any, i: number) => i !== highlightIndex);
+    setData({ ...data, experience: newExperience });
   };
 
   const handleAddAbility = () => {
@@ -121,7 +164,7 @@ const Admin = () => {
         period: "Present",
         location: "Location",
         description: "Job description...",
-        highlights: [],
+        highlights: ["Key responsibility 1"],
         highlighted: false
       }, ...prev.experience]
     }))
@@ -136,8 +179,29 @@ const Admin = () => {
     }
   }
 
-  // --- GitHub Integration ---
+  // Education Handlers
+  const handleAddEducation = () => {
+    setData(prev => ({
+      ...prev,
+      education: [...prev.education, {
+        degree: "New Degree",
+        major: "Major",
+        institution: "University Name",
+        year: "2024"
+      }]
+    }))
+  }
 
+  const handleDeleteEducation = (index: number) => {
+    if (confirm("Delete this education entry?")) {
+      setData(prev => ({
+        ...prev,
+        education: prev.education.filter((_, i) => i !== index)
+      }))
+    }
+  }
+
+  // --- GitHub Integration ---
   const getFileSha = async () => {
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
     const response = await fetch(url, {
@@ -160,15 +224,10 @@ const Admin = () => {
 
     setIsSaving(true);
     try {
-      // 1. Get current SHA
       const sha = await getFileSha();
-
-      // 2. Serialize Data
-      // We perform a "pretty print" of the JSON and wrap it in the export statement
       const fileContent = `export const resumeData = ${JSON.stringify(data, null, 2)};`;
-      const base64Content = btoa(unescape(encodeURIComponent(fileContent))); // Handle UTF-8 characters
+      const base64Content = btoa(unescape(encodeURIComponent(fileContent)));
 
-      // 3. Create Commit
       const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
       const response = await fetch(url, {
         method: "PUT",
@@ -205,8 +264,41 @@ const Admin = () => {
     }
   };
 
+  // --- Render Login Screen if not authenticated ---
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Lock className="w-6 h-6 text-primary" />
+            </div>
+            <CardTitle className="text-2xl">Admin Login</CardTitle>
+            <CardDescription>Enter password to manage resume</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={passwordInput}
+                  onChange={e => setPasswordInput(e.target.value)}
+                  className={authError ? "border-destructive" : ""}
+                />
+                {authError && <p className="text-xs text-destructive">Incorrect password</p>}
+              </div>
+              <Button type="submit" className="w-full">Access Dashboard</Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // --- Render Main Dashboard ---
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-muted/30 pb-20">
 
       {/* Settings Dialog */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
@@ -254,7 +346,7 @@ const Admin = () => {
               </Button>
             </Link>
             <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-              Resume CMS <Badge variant="outline">v2.0 (GitHub)</Badge>
+              Resume CMS <Badge variant="outline">v2.1</Badge>
             </h1>
           </div>
           <div className="flex items-center gap-2">
@@ -361,15 +453,15 @@ const Admin = () => {
             <CardTitle>Professional Experience</CardTitle>
             <Button size="sm" onClick={handleAddNewJob}><Plus className="w-4 h-4 mr-2" /> Add Job</Button>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {data.experience.map((exp, index) => (
-              <div key={index} className="p-4 border border-border rounded-lg space-y-4 relative group">
+          <CardContent className="space-y-8">
+            {data.experience.map((exp, jobIndex) => (
+              <div key={jobIndex} className="p-6 border border-border rounded-xl space-y-4 relative group bg-card/50">
                 {/* Delete Job Button */}
                 <Button
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDeleteJob(index)}
+                  onClick={() => handleDeleteJob(jobIndex)}
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -377,14 +469,14 @@ const Admin = () => {
                 <div className="flex items-center justify-between pr-8">
                   <h3 className="font-semibold text-lg">{exp.title || "New Position"}</h3>
                   <div className="flex items-center gap-2">
-                    <Label htmlFor={`highlighted-${index}`} className="text-sm cursor-pointer select-none">
+                    <Label htmlFor={`highlighted-${jobIndex}`} className="text-sm cursor-pointer select-none">
                       Featured Role
                     </Label>
                     <input
                       type="checkbox"
-                      id={`highlighted-${index}`}
+                      id={`highlighted-${jobIndex}`}
                       checked={exp.highlighted}
-                      onChange={(e) => handleExperienceChange(index, "highlighted", e.target.checked)}
+                      onChange={(e) => handleExperienceChange(jobIndex, "highlighted", e.target.checked)}
                       className="w-4 h-4 accent-primary"
                     />
                   </div>
@@ -394,28 +486,28 @@ const Admin = () => {
                     <Label>Job Title</Label>
                     <Input
                       value={exp.title}
-                      onChange={(e) => handleExperienceChange(index, "title", e.target.value)}
+                      onChange={(e) => handleExperienceChange(jobIndex, "title", e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>Company</Label>
                     <Input
                       value={exp.company}
-                      onChange={(e) => handleExperienceChange(index, "company", e.target.value)}
+                      onChange={(e) => handleExperienceChange(jobIndex, "company", e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>Period</Label>
                     <Input
                       value={exp.period}
-                      onChange={(e) => handleExperienceChange(index, "period", e.target.value)}
+                      onChange={(e) => handleExperienceChange(jobIndex, "period", e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>Location</Label>
                     <Input
                       value={exp.location}
-                      onChange={(e) => handleExperienceChange(index, "location", e.target.value)}
+                      onChange={(e) => handleExperienceChange(jobIndex, "location", e.target.value)}
                     />
                   </div>
                 </div>
@@ -423,9 +515,43 @@ const Admin = () => {
                   <Label>Description</Label>
                   <Textarea
                     value={exp.description}
-                    onChange={(e) => handleExperienceChange(index, "description", e.target.value)}
+                    onChange={(e) => handleExperienceChange(jobIndex, "description", e.target.value)}
                     rows={2}
                   />
+                </div>
+
+                {/* Role Highlights / Responsibilities Editor */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground">Responsibilities / Achievements</Label>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => handleAddHighlight(jobIndex)}>
+                      <Plus className="w-3 h-3 mr-1" /> Add Point
+                    </Button>
+                  </div>
+                  <div className="space-y-2 pl-2 border-l-2 border-border/50">
+                    {exp.highlights.map((highlight: string, hIndex: number) => (
+                      <div key={hIndex} className="flex gap-2 items-start group/li">
+                        <div className="mt-2.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                        <Textarea
+                          value={highlight}
+                          onChange={(e) => handleHighlightChange(jobIndex, hIndex, e.target.value)}
+                          className="min-h-[2.5rem] py-2 resize-none text-sm"
+                          rows={1}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 text-muted-foreground hover:text-destructive opacity-0 group-hover/li:opacity-100 transition-opacity"
+                          onClick={() => handleDeleteHighlight(jobIndex, hIndex)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    {exp.highlights.length === 0 && (
+                      <p className="text-sm text-muted-foreground italic">No responsibilities listed.</p>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -434,12 +560,21 @@ const Admin = () => {
 
         {/* Education (Editable now) */}
         <Card className="mb-6">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Education</CardTitle>
+            <Button size="sm" onClick={handleAddEducation}><Plus className="w-4 h-4 mr-2" /> Add Education</Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {data.education.map((edu, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-4 last:border-0">
+              <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-6 mb-2 last:border-0 relative group">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10"
+                  onClick={() => handleDeleteEducation(index)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
                 <div className="space-y-2">
                   <Label>Degree</Label>
                   <Input
