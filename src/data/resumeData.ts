@@ -118,9 +118,8 @@ export const resumeData = {
       "Meticulous attention to detail"
     ]
   },
-  "certifications": [
+  certifications: [
     {
-<<<<<<< HEAD
       name: "Microsoft Azure Fundamentals",
       code: "AZ-900",
       issuer: "Microsoft",
@@ -159,14 +158,6 @@ export const resumeData = {
     ]
   },
   experience: [
-=======
-      "name": "Microsoft Azure Fundamentals",
-      "code": "AZ-900",
-      "issuer": "Microsoft"
-    }
-  ],
-  "experience": [
->>>>>>> 01cd506ab5ebe11f4a2793871ce0659d7ced0a52
     {
       "title": "IT Support Specialist",
       "company": "epay Australia Pty Ltd",
