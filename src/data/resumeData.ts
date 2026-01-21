@@ -63,7 +63,39 @@ export const resumeData = {
       code: "AZ-900",
       issuer: "Microsoft",
     },
+    {
+      name: "Microsoft 365 Fundamentals",
+      code: "MS-900",
+      issuer: "Microsoft",
+    },
   ],
+  projects: {
+    current: [
+      {
+        title: "Visitor Management System",
+        description: "Web application running on Android tablets for visitor sign-in/out.",
+        details: "Sends entry data to a company email which is captured by Power Automate/SharePoint.",
+        type: "Web App",
+      },
+      {
+        title: "Call Queue Display",
+        description: "Simple display of call queues on TV units using Orange Pi.",
+        type: "IoT / Display",
+      }
+    ],
+    completed: [
+      {
+        title: "Sydney Office Relocation",
+        description: "Managed IT infrastructure relocation for the Sydney office.",
+        type: "Infrastructure",
+      },
+      {
+        title: "Asset Records Refresh",
+        description: "Comprehensive update and verification of all IT asset records.",
+        type: "Administration",
+      }
+    ]
+  },
   experience: [
     {
       title: "IT Support Specialist",
